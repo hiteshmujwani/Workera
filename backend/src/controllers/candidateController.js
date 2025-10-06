@@ -32,7 +32,7 @@ const generateToken = (id, role) => {
 // REGISTER candidate
 export const registerCandidate = async (req, res) => {
   try {
-    const { name, email, password, skills } = req.body;
+    const { firstName, lastName, email, password, skills } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser)
@@ -49,7 +49,8 @@ export const registerCandidate = async (req, res) => {
     const otpExpiry = indiaTime.getTime() + 1 * 60 * 1000; // 1 min
 
     const user = await User.create({
-      name,
+      firstName,
+      lastName,
       email,
       password: hashedPassword,
       role: "candidate",
@@ -67,7 +68,7 @@ export const registerCandidate = async (req, res) => {
     });
 
     res.status(201).json({
-      message: "Candidate registered successfully. OTP sent to email.",
+      message: "OTP sent to email.",
       userId: user._id,
     });
   } catch (error) {

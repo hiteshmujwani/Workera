@@ -1,5 +1,7 @@
 "use client";
 
+import { Api } from "@/apiClient/ApiClient";
+import { REGISTER_CANDIDATE, VERIFY_OTP } from "@/constant/constant";
 import {
   Box,
   Button,
@@ -22,7 +24,36 @@ import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const isOtp = false;
+  const [isVerifyOtp, setIsVerifyOtp] = useState(false);
+  const [bodyData, setBodyData] = useState({});
+  const [otpUserId, setOtpUserId] = useState("");
+  const [otpValue, setOtpValue]: any = useState("");
+
+  const onInputChange = (field: string, value: string) => {
+    setBodyData((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
+  };
+
+  const handleRegister = async () => {
+    try {
+      const response = await Api.post(REGISTER_CANDIDATE, bodyData);
+      if (response.status == 201) {
+        setIsVerifyOtp(true);
+        setBodyData({});
+        setOtpUserId(response.data.userId);
+      }
+    } catch (error) {
+      console.log(error, "error while register on client");
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    const otp = otpValue.join("");
+    const response = await Api.post(VERIFY_OTP, { userId: otpUserId, otp });
+    console.log(response);
+  };
 
   return (
     <section className="h-screen bg-white">
@@ -79,7 +110,7 @@ export default function Login() {
               </Box>
             </VStack>
           </GridItem>
-          {!isOtp ? (
+          {!isVerifyOtp ? (
             <GridItem colSpan={{ base: 1, lg: 7 }}>
               <VStack
                 minH={{ base: "100vh", lg: "auto" }}
@@ -137,6 +168,9 @@ export default function Login() {
                         <Input
                           placeholder="Enter Your First Name"
                           color={"black"}
+                          onChange={(e) =>
+                            onInputChange("firstName", e.target.value)
+                          }
                         />
                         <Field.ErrorText>This is an error text</Field.ErrorText>
                       </Field.Root>
@@ -147,6 +181,9 @@ export default function Login() {
                         <Input
                           placeholder="Enter Your Last Name"
                           color={"black"}
+                          onChange={(e) =>
+                            onInputChange("lastName", e.target.value)
+                          }
                         />
                         <Field.ErrorText>This is an error text</Field.ErrorText>
                       </Field.Root>
@@ -154,7 +191,13 @@ export default function Login() {
                     <GridItem colSpan={12}>
                       <Field.Root>
                         <Field.Label color={"black"}>Email</Field.Label>
-                        <Input placeholder="Enter Your Email" color={"black"} />
+                        <Input
+                          placeholder="Enter Your Email"
+                          color={"black"}
+                          onChange={(e) =>
+                            onInputChange("email", e.target.value)
+                          }
+                        />
                         <Field.ErrorText>This is an error text</Field.ErrorText>
                       </Field.Root>
                     </GridItem>
@@ -167,6 +210,9 @@ export default function Login() {
                             placeholder="Enter Your Password"
                             color={"black"}
                             pr="3rem"
+                            onChange={(e) =>
+                              onInputChange("password", e.target.value)
+                            }
                           />
                           <IconButton
                             position="absolute"
@@ -219,6 +265,7 @@ export default function Login() {
                         bg={"black"}
                         width={"full"}
                         color={"white"}
+                        onClick={handleRegister}
                       >
                         Register
                       </Button>
@@ -269,7 +316,9 @@ export default function Login() {
                   <Text>Check your email and get started !</Text>
                 </Box>
                 <Box mt={6} color={"black"}>
-                  <PinInput.Root>
+                  <PinInput.Root
+                    onValueChange={(details: any) => setOtpValue(details.value)}
+                  >
                     <PinInput.HiddenInput />
                     <PinInput.Control gap={4}>
                       <PinInput.Input index={0} placeholder="-" />
@@ -304,6 +353,7 @@ export default function Login() {
                     variant={"solid"}
                     width={"full"}
                     mt={6}
+                    onClick={handleVerifyOtp}
                   >
                     Verify
                   </Button>
