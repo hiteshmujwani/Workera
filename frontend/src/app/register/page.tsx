@@ -19,15 +19,17 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 
-export default function Login() {
+export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [isVerifyOtp, setIsVerifyOtp] = useState(false);
   const [bodyData, setBodyData] = useState({});
   const [otpUserId, setOtpUserId] = useState("");
   const [otpValue, setOtpValue]: any = useState("");
+  const router = useRouter();
 
   const onInputChange = (field: string, value: string) => {
     setBodyData((prevData) => ({
@@ -52,7 +54,11 @@ export default function Login() {
   const handleVerifyOtp = async () => {
     const otp = otpValue.join("");
     const response = await Api.post(VERIFY_OTP, { userId: otpUserId, otp });
-    console.log(response);
+    let route = "";
+    if (response.status == 200) {
+      route = response.data.user.role;
+      router.push(`/${route}`);
+    }
   };
 
   return (

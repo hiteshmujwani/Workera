@@ -53,7 +53,7 @@ export const registerCandidate = async (req, res) => {
       lastName,
       email,
       password: hashedPassword,
-      role: "candidate",
+      role: "user",
       otp,
       otpExpiry,
       isVerified: false,
@@ -153,5 +153,22 @@ export const loginCandidate = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error logging in", error });
+  }
+};
+
+export const getCandidate = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decoded);
+    const candidate = await Candidate.find({ user: decoded.id })
+      .select("-password")
+      .populate("user");
+    console.log(candidate);
+    res.status(200).json(candidate);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

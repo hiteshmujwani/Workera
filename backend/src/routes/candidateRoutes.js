@@ -3,6 +3,7 @@ import {
   registerCandidate,
   loginCandidate,
   verifyOTP,
+  getCandidate,
 } from "../controllers/candidateController.js";
 
 const router = express.Router();
@@ -15,5 +16,8 @@ router.post("/verify-otp", verifyOTP);
 
 // POST /api/candidate/login
 router.post("/login", loginCandidate);
+
+// POST /api/candidate/me
+router.get("/me", getCandidate);
 
 export default router;

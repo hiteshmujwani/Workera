@@ -23,9 +23,9 @@ app.use(cookieParser());
 // CORS configuration
 const corsOptions = {
   origin: [
-    "http://localhost:3000", // Next.js default port
-    "http://localhost:3001", // Alternative Next.js port
-    "https://workera.onrender.com", // Production frontend URL
+    "http://localhost:3000",
+    "http://localhost:3002",
+    "https://workera.onrender.com",
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -35,7 +35,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Basic route
-app.get("/", (_, res) => {
+app.get("/", (req, res) => {
   res.json({
     message: "Workera API Server is running!",
     version: "1.0.0",
