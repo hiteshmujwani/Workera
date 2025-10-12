@@ -1,5 +1,7 @@
 "use client";
 
+import { Api } from "@/apiClient/ApiClient";
+import { LOGIN_CANDIDATE } from "@/constant/constant";
 import {
   Box,
   Button,
@@ -17,12 +19,32 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const isOtp = false;
+  const [bodyData, setBodyData] = useState({});
+  const router = useRouter();
+
+  const onInputChange = (field: string, value: string) => {
+    setBodyData((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
+  };
+
+  const handleLogin = async () => {
+    try {
+      const response = await Api.post(LOGIN_CANDIDATE, bodyData);
+      if (response.status == 200) {
+        router.push(`/${response.data.user.role}`);
+      }
+    } catch (error) {
+      console.log(error, "error while log in on client side");
+    }
+  };
 
   return (
     <section className="h-screen bg-white">
@@ -79,59 +101,58 @@ export default function Login() {
               </Box>
             </VStack>
           </GridItem>
-          {!isOtp ? (
-            <GridItem colSpan={{ base: 1, lg: 7 }}>
-              <VStack
-                minH={{ base: "100vh", lg: "auto" }}
-                justify={{ base: "center", lg: "flex-start" }}
-              >
-                <Box p={8} display={{ base: "block", lg: "block" }}>
-                  <HStack gap={2}>
-                    <Image
-                      src="/assets/logo.png"
-                      boxSize="35px"
-                      borderRadius="lg"
-                      fit="cover"
-                      alt="Workera"
-                    />
-                    <Link
-                      href="/"
-                      textDecoration={"none"}
-                      outline={"none"}
-                      fontSize={"2xl"}
-                      fontWeight={"bold"}
-                      color={"black"}
-                    >
-                      Workera
-                    </Link>
-                  </HStack>
-                </Box>
-                <Box maxW={"md"} px={{ base: 4, lg: 0 }}>
-                  <Text
+          <GridItem colSpan={{ base: 1, lg: 7 }}>
+            <VStack
+              minH={{ base: "100vh", lg: "auto" }}
+              justify={{ base: "center", lg: "flex-start" }}
+            >
+              <Box p={8} display={{ base: "block", lg: "block" }}>
+                <HStack gap={2}>
+                  <Image
+                    src="/assets/logo.png"
+                    boxSize="35px"
+                    borderRadius="lg"
+                    fit="cover"
+                    alt="Workera"
+                  />
+                  <Link
+                    href="/"
+                    textDecoration={"none"}
+                    outline={"none"}
+                    fontSize={"2xl"}
                     fontWeight={"bold"}
                     color={"black"}
-                    textStyle={{ base: "4xl", lg: "5xl" }}
-                    textAlign={"center"}
                   >
-                    Welcome Back
-                  </Text>
-                  <Text
-                    fontWeight={"medium"}
-                    color={"gray.400"}
-                    textStyle={"sm"}
-                    textAlign={"center"}
-                  >
-                    Enter Your Email And Password To Access Your Account
-                  </Text>
-                </Box>
-
-                <Box
-                  width={{ base: "90%", md: "70%", lg: "50%" }}
-                  mt={10}
-                  px={{ base: 4, lg: 0 }}
+                    Workera
+                  </Link>
+                </HStack>
+              </Box>
+              <Box maxW={"md"} px={{ base: 4, lg: 0 }}>
+                <Text
+                  fontWeight={"bold"}
+                  color={"black"}
+                  textStyle={{ base: "4xl", lg: "5xl" }}
+                  textAlign={"center"}
                 >
-                  <SimpleGrid columns={12} gap={4}>
-                    {/* <GridItem colSpan={6}>
+                  Welcome Back
+                </Text>
+                <Text
+                  fontWeight={"medium"}
+                  color={"gray.400"}
+                  textStyle={"sm"}
+                  textAlign={"center"}
+                >
+                  Enter Your Email And Password To Access Your Account
+                </Text>
+              </Box>
+
+              <Box
+                width={{ base: "90%", md: "70%", lg: "50%" }}
+                mt={10}
+                px={{ base: 4, lg: 0 }}
+              >
+                <SimpleGrid columns={12} gap={4}>
+                  {/* <GridItem colSpan={6}>
                     <Field.Root>
                       <Field.Label color={"black"}>First Name</Field.Label>
                       <Input placeholder="Enter Your First Name" />
@@ -145,166 +166,109 @@ export default function Login() {
                       <Field.ErrorText>This is an error text</Field.ErrorText>
                     </Field.Root>
                   </GridItem> */}
-                    <GridItem colSpan={12}>
-                      <Field.Root>
-                        <Field.Label color={"black"}>Email</Field.Label>
-                        <Input placeholder="Enter Your Email" color={"black"} />
-                        <Field.ErrorText>This is an error text</Field.ErrorText>
-                      </Field.Root>
-                    </GridItem>
-                    <GridItem colSpan={12}>
-                      <Field.Root>
-                        <Field.Label color={"black"}>Password</Field.Label>
-                        <Box position="relative" width={"full"}>
-                          <Input
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Enter Your Password"
-                            color={"black"}
-                            pr="3rem"
-                          />
-                          <IconButton
-                            position="absolute"
-                            right="0.5rem"
-                            top="50%"
-                            transform="translateY(-50%)"
-                            variant="solid"
-                            size="sm"
-                            onClick={() => setShowPassword(!showPassword)}
-                            aria-label={
-                              showPassword ? "Hide password" : "Show password"
-                            }
-                          >
-                            {showPassword ? <RiEyeOffLine /> : <RiEyeLine />}
-                          </IconButton>
-                        </Box>
-                        <Field.ErrorText>This is an error text</Field.ErrorText>
-                      </Field.Root>
-                    </GridItem>
-                    <GridItem colSpan={12}>
-                      <Flex
-                        justifyContent={"space-between"}
-                        flexDirection={{ base: "row", sm: "row" }}
-                        gap={{ base: 2, sm: 0 }}
-                      >
-                        <Checkbox.Root>
-                          <Checkbox.HiddenInput />
-                          <Checkbox.Control />
-                          <Checkbox.Label
-                            color={"black"}
-                            fontSize={"sm"}
-                            fontWeight={"semibold"}
-                          >
-                            Remember me
-                          </Checkbox.Label>
-                        </Checkbox.Root>
-                        <Link
-                          href="/"
+                  <GridItem colSpan={12}>
+                    <Field.Root>
+                      <Field.Label color={"black"}>Email</Field.Label>
+                      <Input
+                        placeholder="Enter Your Email"
+                        color={"black"}
+                        onChange={(e) => onInputChange("email", e.target.value)}
+                      />
+                      <Field.ErrorText>This is an error text</Field.ErrorText>
+                    </Field.Root>
+                  </GridItem>
+                  <GridItem colSpan={12}>
+                    <Field.Root>
+                      <Field.Label color={"black"}>Password</Field.Label>
+                      <Box position="relative" width={"full"}>
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Enter Your Password"
+                          color={"black"}
+                          onChange={(e) =>
+                            onInputChange("password", e.target.value)
+                          }
+                          pr="3rem"
+                        />
+                        <IconButton
+                          position="absolute"
+                          right="0.5rem"
+                          top="50%"
+                          transform="translateY(-50%)"
+                          variant="solid"
+                          size="sm"
+                          onClick={() => setShowPassword(!showPassword)}
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
+                        >
+                          {showPassword ? <RiEyeOffLine /> : <RiEyeLine />}
+                        </IconButton>
+                      </Box>
+                      <Field.ErrorText>This is an error text</Field.ErrorText>
+                    </Field.Root>
+                  </GridItem>
+                  <GridItem colSpan={12}>
+                    <Flex
+                      justifyContent={"space-between"}
+                      flexDirection={{ base: "row", sm: "row" }}
+                      gap={{ base: 2, sm: 0 }}
+                    >
+                      <Checkbox.Root>
+                        <Checkbox.HiddenInput />
+                        <Checkbox.Control />
+                        <Checkbox.Label
                           color={"black"}
                           fontSize={"sm"}
                           fontWeight={"semibold"}
                         >
-                          Forgot Password ?
-                        </Link>
-                      </Flex>
-                    </GridItem>
-                    <GridItem colSpan={12}>
-                      <Button
-                        variant={"solid"}
-                        bg={"black"}
-                        width={"full"}
-                        color={"white"}
+                          Remember me
+                        </Checkbox.Label>
+                      </Checkbox.Root>
+                      <Link
+                        href="/"
+                        color={"black"}
+                        fontSize={"sm"}
+                        fontWeight={"semibold"}
                       >
-                        Log In
-                      </Button>
-                    </GridItem>
-                  </SimpleGrid>
-                </Box>
-
-                <HStack
-                  mt={4}
-                  color={"black"}
-                  px={{ base: 4, lg: 0 }}
-                  justify="center"
-                >
-                  <Text textStyle={"sm"} fontWeight={"semibold"}>
-                    Don't Have An Account ?{" "}
-                  </Text>
-                  <Link
-                    textStyle={"sm"}
-                    href="/register"
-                    color={"black"}
-                    fontWeight={"bold"}
-                  >
-                    Sign Up
-                  </Link>
-                </HStack>
-              </VStack>
-            </GridItem>
-          ) : (
-            <GridItem colSpan={{ base: 1, lg: 7 }}>
-              <Flex
-                justifyContent={"center"}
-                alignItems={"center"}
-                height={"100vh"}
-                flexDirection={"column"}
-              >
-                <Box textAlign={"center"} color={"black"}>
-                  <Text
-                    color={"black"}
-                    textStyle={"4xl"}
-                    fontWeight={"bold"}
-                    mb={2}
-                  >
-                    Verification Code
-                  </Text>
-                  <Text>
-                    Your Verification code is sent on your email account
-                  </Text>
-                  <Text>Check your email and get started !</Text>
-                </Box>
-                <Box mt={6} color={"black"}>
-                  <PinInput.Root>
-                    <PinInput.HiddenInput />
-                    <PinInput.Control gap={4}>
-                      <PinInput.Input index={0} placeholder="-" />
-                      <PinInput.Input index={1} placeholder="-" />
-                      <PinInput.Input index={2} placeholder="-" />
-                      <PinInput.Input index={3} placeholder="-" />
-                      <PinInput.Input index={4} placeholder="-" />
-                      <PinInput.Input index={5} placeholder="-" />
-                    </PinInput.Control>
-                  </PinInput.Root>
-                  <HStack
-                    mt={4}
-                    color={"black"}
-                    px={{ base: 4, lg: 0 }}
-                    justify="center"
-                  >
-                    <Text textStyle={"sm"} fontWeight={"semibold"}>
-                      Didn't Recieve the OTP ?{" "}
-                    </Text>
-                    <Link
-                      textStyle={"sm"}
-                      href="/"
-                      color={"black"}
-                      fontWeight={"bold"}
+                        Forgot Password ?
+                      </Link>
+                    </Flex>
+                  </GridItem>
+                  <GridItem colSpan={12}>
+                    <Button
+                      variant={"solid"}
+                      bg={"black"}
+                      width={"full"}
+                      color={"white"}
+                      onClick={handleLogin}
                     >
-                      Resend
-                    </Link>
-                  </HStack>
-                  <Button
-                    color={"white"}
-                    bg={"black"}
-                    variant={"solid"}
-                    width={"full"}
-                    mt={6}
-                  >
-                    Verify
-                  </Button>
-                </Box>
-              </Flex>
-            </GridItem>
-          )}
+                      Log In
+                    </Button>
+                  </GridItem>
+                </SimpleGrid>
+              </Box>
+
+              <HStack
+                mt={4}
+                color={"black"}
+                px={{ base: 4, lg: 0 }}
+                justify="center"
+              >
+                <Text textStyle={"sm"} fontWeight={"semibold"}>
+                  Don't Have An Account ?{" "}
+                </Text>
+                <Link
+                  textStyle={"sm"}
+                  href="/register"
+                  color={"black"}
+                  fontWeight={"bold"}
+                >
+                  Sign Up
+                </Link>
+              </HStack>
+            </VStack>
+          </GridItem>
         </SimpleGrid>
       </Box>
     </section>

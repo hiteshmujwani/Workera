@@ -4,6 +4,7 @@ import {
   loginCandidate,
   verifyOTP,
   getCandidate,
+  logoutCandidate,
 } from "../controllers/candidateController.js";
 
 const router = express.Router();
@@ -17,7 +18,10 @@ router.post("/verify-otp", verifyOTP);
 // POST /api/candidate/login
 router.post("/login", loginCandidate);
 
-// POST /api/candidate/me
+// GET /api/candidate/me
 router.get("/me", getCandidate);
+
+// POST /api/candidate/logout
+router.post("/logout", logoutCandidate);
 
 export default router;

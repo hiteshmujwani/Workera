@@ -5,3 +5,4 @@ export const REGISTER_CANDIDATE = "/candidate/register";
 export const VERIFY_OTP = "/candidate/verify-otp";
 export const LOGIN_CANDIDATE = "/candidate/login";
 export const GET_USER = "/candidate/me";
+export const LOGOUT_USER = "/candidate/logout";
