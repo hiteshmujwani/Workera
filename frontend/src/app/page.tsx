@@ -6,107 +6,32 @@ import {
   Button,
   Container,
   Flex,
-  HStack,
   Image,
-  Link,
   Span,
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { BiSearch } from "react-icons/bi";
-import { RiArrowRightLine, RiMailLine } from "react-icons/ri";
+import { RiArrowRightLine } from "react-icons/ri";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 
 export default function Home() {
+  const router = useRouter();
+  const { data } = useSelector((state: any) => state.user);
+  const isAuthenticated = data?.user;
+
+  const handleGetStarted = () => {
+    if (isAuthenticated) {
+      router.push(`/${data.user.role}`);
+    } else {
+      router.push("/register");
+    }
+  };
+
   return (
-    <section className="!h-screen bg-white relative">
+    <section className="min-h-[calc(100vh-4rem)] bg-white relative">
       <Box p={5}>
         <Container>
-          <Flex justifyContent={"space-between"} alignItems={"center"}>
-            <Box>
-              <HStack gap={2}>
-                <Image
-                  src="/assets/logo.png"
-                  boxSize="35px"
-                  borderRadius="lg"
-                  fit="cover"
-                  alt="Workera"
-                />
-                <Link
-                  href="/"
-                  textDecoration={"none"}
-                  outline={"none"}
-                  fontSize={"2xl"}
-                  fontWeight={"bold"}
-                  color={"black"}
-                >
-                  Workera
-                </Link>
-              </HStack>
-            </Box>
-            <Box>
-              <HStack gap={8}>
-                <Link
-                  href="/"
-                  textDecoration={"none"}
-                  outline={"none"}
-                  fontSize={"sm"}
-                  fontWeight={"semibold"}
-                  color={"gray.700"}
-                  _hover={{ color: "black" }}
-                >
-                  Jobs
-                </Link>
-                <Link
-                  href="/"
-                  textDecoration={"none"}
-                  outline={"none"}
-                  fontSize={"sm"}
-                  fontWeight={"semibold"}
-                  color={"gray.700"}
-                  _hover={{ color: "black" }}
-                >
-                  Companies
-                </Link>
-                <Link
-                  href="/"
-                  textDecoration={"none"}
-                  outline={"none"}
-                  fontSize={"sm"}
-                  fontWeight={"semibold"}
-                  color={"gray.700"}
-                  _hover={{ color: "black" }}
-                >
-                  Career Resources
-                </Link>
-                <Link
-                  href="/"
-                  textDecoration={"none"}
-                  outline={"none"}
-                  fontSize={"sm"}
-                  fontWeight={"semibold"}
-                  color={"gray.700"}
-                  _hover={{ color: "black" }}
-                >
-                  For Employers
-                </Link>
-              </HStack>
-            </Box>
-            <Box>
-              <HStack>
-                <Button
-                  variant={"outline"}
-                  fontWeight={"medium"}
-                  color={"black"}
-                  _hover={{ color: "white" }}
-                >
-                  Login
-                </Button>
-                <Button variant={"subtle"} fontWeight={"medium"}>
-                  Register
-                </Button>
-              </HStack>
-            </Box>
-          </Flex>
           <Flex justifyContent={"center"} alignItems={"center"} mt={20}>
             <VStack alignContent={"center"}>
               <Badge rounded={"full"} px={3} py={1}>
@@ -150,6 +75,7 @@ export default function Home() {
                 variant="solid"
                 mt={4}
                 fontWeight={"semibold"}
+                onClick={handleGetStarted}
               >
                 Get Started <RiArrowRightLine />
               </Button>

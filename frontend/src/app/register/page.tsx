@@ -62,7 +62,7 @@ export default function Register() {
   };
 
   return (
-    <section className="h-screen bg-white">
+    <section className="min-h-screen bg-white">
       <Box>
         <SimpleGrid columns={{ base: 1, lg: 12 }}>
           <GridItem
@@ -72,7 +72,8 @@ export default function Register() {
             <VStack
               bg={"black"}
               p={8}
-              height={"100vh"}
+              minH={"100vh"}
+              height={"100%"}
               width={"full"}
               justifyContent={"space-between"}
               alignItems={"flex-start"}
@@ -118,11 +119,8 @@ export default function Register() {
           </GridItem>
           {!isVerifyOtp ? (
             <GridItem colSpan={{ base: 1, lg: 7 }}>
-              <VStack
-                minH={{ base: "100vh", lg: "auto" }}
-                justify={{ base: "center", lg: "flex-start" }}
-              >
-                <Box p={8} display={{ base: "block", lg: "block" }}>
+              <VStack minH={{ base: "100vh" }} justify={{ base: "center" }}>
+                <Box p={8} display={{ base: "block" }}>
                   <HStack gap={2}>
                     <Image
                       src="/assets/logo.png"

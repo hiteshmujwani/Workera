@@ -14,7 +14,6 @@ import {
   Image,
   Input,
   Link,
-  PinInput,
   SimpleGrid,
   Text,
   VStack,
@@ -47,7 +46,7 @@ export default function Login() {
   };
 
   return (
-    <section className="h-screen bg-white">
+    <section className="min-h-screen bg-white">
       <Box>
         <SimpleGrid columns={{ base: 1, lg: 12 }}>
           <GridItem
@@ -57,7 +56,8 @@ export default function Login() {
             <VStack
               bg={"black"}
               p={8}
-              height={"100vh"}
+              minH={"100vh"}
+              height={"100%"}
               width={"full"}
               justifyContent={"space-between"}
               alignItems={"flex-start"}
@@ -103,10 +103,10 @@ export default function Login() {
           </GridItem>
           <GridItem colSpan={{ base: 1, lg: 7 }}>
             <VStack
-              minH={{ base: "100vh", lg: "auto" }}
-              justify={{ base: "center", lg: "flex-start" }}
+              minH={{ base: "100vh", lg: "100%" }}
+              justify={{ base: "center" }}
             >
-              <Box p={8} display={{ base: "block", lg: "block" }}>
+              <Box p={8} display={{ base: "block" }}>
                 <HStack gap={2}>
                   <Image
                     src="/assets/logo.png"
