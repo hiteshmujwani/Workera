@@ -20,7 +20,7 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
 const cookieOptions = {
   httpOnly: true, // JS cannot access cookie
   secure: process.env.NODE_ENV === "production", // HTTPS only in production
-  sameSite: "strict", // prevent CSRF
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // prevent CSRF
   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
 };
 
