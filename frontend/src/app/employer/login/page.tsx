@@ -1,7 +1,7 @@
 "use client";
 
 import { Api } from "@/apiClient/ApiClient";
-import { LOGIN_CANDIDATE } from "@/constant/constant";
+import { LOGIN_EMPLOYER } from "@/constant/constant";
 import {
   Box,
   Button,
@@ -22,9 +22,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 
-export default function Login() {
+export default function EmployerLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [bodyData, setBodyData] = useState({});
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const onInputChange = (field: string, value: string) => {
@@ -36,12 +37,15 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const response = await Api.post(LOGIN_CANDIDATE, bodyData);
+      setLoading(true);
+      const response = await Api.post(LOGIN_EMPLOYER, bodyData);
       if (response.status == 200) {
         router.push(`/${response.data.user.role}`);
       }
     } catch (error) {
       console.log(error, "error while log in on client side");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,18 +89,17 @@ export default function Login() {
               </Box>
               <Box>
                 <Text textStyle={"5xl"} maxW={"lg"} fontWeight={"bold"}>
-                  Your Dream Job
+                  Find Top Talent
                 </Text>
                 <Text textStyle={"5xl"} maxW={"lg"} fontWeight={"bold"}>
-                  Is Just a Login Away
+                  For Your Company
                 </Text>
                 <Text mt={4}>
-                  Trust the process, stay consistent — your dream job is already
-                  on its way.
+                  Connect with skilled professionals and build your dream team.
                 </Text>
                 <Text>
-                  Every login, every effort, brings you one step closer to the
-                  life you’ve always imagined.
+                  Post jobs, review applications, and hire the best candidates
+                  with AI-powered matching.
                 </Text>
               </Box>
             </VStack>
@@ -134,7 +137,7 @@ export default function Login() {
                   textStyle={{ base: "4xl", lg: "5xl" }}
                   textAlign={"center"}
                 >
-                  Welcome Back
+                  Employer Login
                 </Text>
                 <Text
                   fontWeight={"medium"}
@@ -142,7 +145,7 @@ export default function Login() {
                   textStyle={"sm"}
                   textAlign={"center"}
                 >
-                  Enter Your Email And Password To Access Your Account
+                  Access your employer dashboard to manage jobs and candidates
                 </Text>
               </Box>
 
@@ -152,25 +155,11 @@ export default function Login() {
                 px={{ base: 4, lg: 0 }}
               >
                 <SimpleGrid columns={12} gap={4}>
-                  {/* <GridItem colSpan={6}>
-                    <Field.Root>
-                      <Field.Label color={"black"}>First Name</Field.Label>
-                      <Input placeholder="Enter Your First Name" />
-                      <Field.ErrorText>This is an error text</Field.ErrorText>
-                    </Field.Root>
-                  </GridItem>
-                  <GridItem colSpan={6}>
-                    <Field.Root>
-                      <Field.Label color={"black"}>Last Name</Field.Label>
-                      <Input placeholder="Enter Your Last Name" />
-                      <Field.ErrorText>This is an error text</Field.ErrorText>
-                    </Field.Root>
-                  </GridItem> */}
                   <GridItem colSpan={12}>
                     <Field.Root>
                       <Field.Label color={"black"}>Email</Field.Label>
                       <Input
-                        placeholder="Enter Your Email"
+                        placeholder="Enter Your Company Email"
                         color={"black"}
                         onChange={(e) => onInputChange("email", e.target.value)}
                       />
@@ -242,8 +231,9 @@ export default function Login() {
                       width={"full"}
                       color={"white"}
                       onClick={handleLogin}
+                      loading={loading}
                     >
-                      Log In
+                      Log In as Employer
                     </Button>
                   </GridItem>
                 </SimpleGrid>
@@ -260,11 +250,30 @@ export default function Login() {
                 </Text>
                 <Link
                   textStyle={"sm"}
-                  href="/register"
+                  href="/employer/register"
                   color={"black"}
                   fontWeight={"bold"}
                 >
                   Sign Up
+                </Link>
+              </HStack>
+
+              <HStack
+                mt={2}
+                color={"black"}
+                px={{ base: 4, lg: 0 }}
+                justify="center"
+              >
+                <Text textStyle={"sm"} fontWeight={"semibold"}>
+                  Looking for a job?{" "}
+                </Text>
+                <Link
+                  textStyle={"sm"}
+                  href="/candidate/login"
+                  color={"black"}
+                  fontWeight={"bold"}
+                >
+                  Candidate Login
                 </Link>
               </HStack>
             </VStack>

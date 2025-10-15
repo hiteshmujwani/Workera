@@ -6,6 +6,8 @@ import cors from "cors";
 
 // Routes
 import candidateRoutes from "./routes/candidateRoutes.js";
+import employerRoutes from "./routes/employerRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 
@@ -45,6 +47,8 @@ app.get("/", (req, res) => {
 
 // Endpoints
 app.use("/api/v1/candidate", candidateRoutes);
+app.use("/api/v1/employer", employerRoutes);
+app.use("/api/v1/user", userRoutes);
 
 // Start server
 app.listen(PORT, () => {

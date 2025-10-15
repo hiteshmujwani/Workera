@@ -11,7 +11,12 @@ export default function ConditionalLayout({
   const pathname = usePathname();
 
   // Pages where header should not be shown
-  const noHeaderPages = ["/login", "/register"];
+  const noHeaderPages = [
+    "/candidate/login",
+    "/candidate/register",
+    "/employer/register",
+    "/employer/login",
+  ];
   const showHeader = !noHeaderPages.includes(pathname);
 
   return (

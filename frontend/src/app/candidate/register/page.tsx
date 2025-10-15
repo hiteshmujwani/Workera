@@ -288,7 +288,7 @@ export default function Register() {
                   </Text>
                   <Link
                     textStyle={"sm"}
-                    href="/login"
+                    href="/candidate/login"
                     color={"black"}
                     fontWeight={"bold"}
                   >

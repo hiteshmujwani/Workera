@@ -1,11 +1,11 @@
 import User from "../models/User.js";
-import Candidate from "../models/Candidate.js";
+import Employer from "../models/Employer.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
-dotenv.config(); // applied here because it was not working in index.js for this file
+dotenv.config();
 
 // Nodemailer transporter
 const transporter = nodemailer.createTransport({
@@ -18,21 +18,31 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
 
 // Cookie options
 const cookieOptions = {
-  httpOnly: true, // JS cannot access cookie
-  secure: process.env.NODE_ENV === "production", // HTTPS only in production
-  sameSite: "strict", // prevent CSRF
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
 };
 
-// generate JWT
+// Generate JWT
 const generateToken = (id, role) => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
-// REGISTER candidate
-export const registerCandidate = async (req, res) => {
+// REGISTER employer
+export const registerEmployer = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, skills } = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      companyName,
+      companyDescription,
+      location,
+      website,
+      industry,
+    } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser)
@@ -53,7 +63,7 @@ export const registerCandidate = async (req, res) => {
       lastName,
       email,
       password: hashedPassword,
-      role: "candidate",
+      role: "employer",
       otp,
       otpExpiry,
       isVerified: false,
@@ -63,38 +73,54 @@ export const registerCandidate = async (req, res) => {
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
-      subject: "Workera OTP Verification",
-      text: `Your OTP is ${otp}. It expires in 1 minute.`,
+      subject: "Workera Employer OTP Verification",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">Welcome to Workera!</h2>
+          <p>Hello ${firstName},</p>
+          <p>Thank you for registering as an employer on Workera. Your OTP verification code is:</p>
+          <div style="background: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0;">
+            <h1 style="color: #000; font-size: 32px; margin: 0;">${otp}</h1>
+          </div>
+          <p><strong>This OTP expires in 1 minute.</strong></p>
+          <p>Company: ${companyName}</p>
+          <p>Best regards,<br>Workera Team</p>
+        </div>
+      `,
     });
 
     res.status(201).json({
       message: "OTP sent to email.",
       userId: user._id,
+      companyName, // Pass back for OTP verification
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error registering candidate", error });
+    res.status(500).json({ message: "Error registering employer", error });
   }
 };
 
-// verifyOTP moved to userController.js for universal use
-
-// LOGIN candidate
-export const loginCandidate = async (req, res) => {
+// LOGIN employer
+export const loginEmployer = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user || user.role !== "candidate")
+    if (!user || user.role !== "employer")
       return res.status(400).json({ message: "Invalid credentials" });
+
+    if (!user.isVerified)
+      return res
+        .status(400)
+        .json({ message: "Please verify your email first" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
 
-    const candidate = await Candidate.findOne({
+    const employer = await Employer.findOne({
       user: user._id,
-    });
+    }).populate("user");
 
     const token = generateToken(user._id, user.role);
 
@@ -102,15 +128,13 @@ export const loginCandidate = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Candidate logged in successfully",
+      message: "Employer logged in successfully",
       token,
       user,
-      profile: candidate,
+      profile: employer,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error logging in", error });
   }
 };
-
-// getCandidate and logoutCandidate moved to userController.js for universal use

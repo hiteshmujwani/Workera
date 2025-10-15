@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const employerSchema = new mongoose.Schema(
   {
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -11,6 +11,7 @@ const employerSchema = new mongoose.Schema(
     companyDescription: { type: String },
     location: { type: String },
     website: { type: String },
+    industry: { type: String },
     postedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
   },
   { timestamps: true }

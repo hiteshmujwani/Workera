@@ -6,46 +6,63 @@ export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
+  // 🚫 Skip middleware for login/register but redirect logged-in users away from them
+  if (
+    pathname.startsWith("/candidate/login") ||
+    pathname.startsWith("/candidate/register") ||
+    pathname.startsWith("/employer/login") ||
+    pathname.startsWith("/employer/register")
+  ) {
+    if (token) {
+      try {
+        const { payload } = await jwtVerify(token, secret);
+        const redirectUrl =
+          payload.role === "employer" ? "/employer" : "/candidate";
+        return NextResponse.redirect(new URL(redirectUrl, request.url));
+      } catch {
+        return NextResponse.next();
+      }
+    }
+    return NextResponse.next();
+  }
+
   let user = null;
   if (token) {
     try {
       const { payload } = await jwtVerify(token, secret);
       user = payload;
-    } catch (error) {
-      const response = NextResponse.redirect(new URL("/login", request.url));
+    } catch {
+      const response = NextResponse.redirect(
+        new URL("/candidate/login", request.url)
+      );
       response.cookies.delete("token");
       return response;
     }
   }
 
-  const publicRoutes = ["/", "/login", "/register"];
-  const adminRoutes = ["/admin"];
-  const userRoutes = ["/user", "/profile", "/jobs"];
+  const employerRoutes = ["/employer"];
+  const candidateRoutes = ["/candidate"];
+  const isEmployerRoute = employerRoutes.some((r) => pathname.startsWith(r));
+  const isCandidateRoute = candidateRoutes.some((r) => pathname.startsWith(r));
 
-  const isPublicRoute = publicRoutes.includes(pathname);
-  const isAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
-  const isUserRoute = userRoutes.some((route) => pathname.startsWith(route));
-
-  if (user && (pathname === "/login" || pathname === "/register")) {
-    const redirectUrl = user.role === "admin" ? "/admin" : "/user";
-    return NextResponse.redirect(new URL(redirectUrl, request.url));
+  // 🔒 No token → send to correct login
+  if (!user && (isEmployerRoute || isCandidateRoute)) {
+    return isEmployerRoute
+      ? NextResponse.redirect(new URL("/employer/login", request.url))
+      : NextResponse.redirect(new URL("/candidate/login", request.url));
   }
 
-  if (!user && (isAdminRoute || isUserRoute)) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
+  // 🚫 Wrong role access
   if (user) {
-    if (user.role === "admin" && isUserRoute) {
-      return NextResponse.redirect(new URL("/admin", request.url));
-    }
+    if (user.role === "employer" && isCandidateRoute)
+      return NextResponse.redirect(new URL("/employer", request.url));
 
-    if (user.role === "user" && isAdminRoute) {
-      return NextResponse.redirect(new URL("/user", request.url));
-    }
+    if (user.role === "candidate" && isEmployerRoute)
+      return NextResponse.redirect(new URL("/candidate", request.url));
 
+    // 🏠 Root redirect
     if (pathname === "/") {
-      const redirectUrl = user.role === "admin" ? "/admin" : "/user";
+      const redirectUrl = user.role === "employer" ? "/employer" : "/candidate";
       return NextResponse.redirect(new URL(redirectUrl, request.url));
     }
   }
@@ -54,13 +71,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/",
-    "/login",
-    "/register",
-    "/user/:path*",
-    "/admin/:path*",
-    "/profile/:path*",
-    "/jobs/:path*",
-  ],
+  matcher: ["/", "/candidate/:path*", "/employer/:path*"],
 };
