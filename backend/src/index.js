@@ -24,7 +24,7 @@ app.use(cookieParser());
 
 // CORS configuration
 const corsOptions = {
-  origin: [process.env.CLIENT_URL], // ✅ local URLs
+  origin: [process.env.CLIENT_URL],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "Cookie"],

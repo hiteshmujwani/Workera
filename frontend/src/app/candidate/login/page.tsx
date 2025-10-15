@@ -37,6 +37,7 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       const response = await Api.post(LOGIN_CANDIDATE, bodyData);
+      console.log(response);
       if (response.status == 200) {
         router.push(`/${response.data.user.role}`);
       }
