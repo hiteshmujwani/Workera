@@ -24,10 +24,7 @@ app.use(cookieParser());
 
 // CORS configuration
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? ["https://workera-iota.vercel.app"] // ✅ your production frontend URL
-      : ["http://localhost:3000", "http://localhost:3002"], // ✅ local URLs
+  origin: [process.env.CLIENT_URL], // ✅ local URLs
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
