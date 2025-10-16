@@ -16,9 +16,10 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
 // Cookie options
 const cookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "strict",
-  maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+  secure: true, // Always true for production HTTPS
+  sameSite: "none", // Required for cross-origin cookies
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+  path: "/",
 };
 
 // Generate JWT
