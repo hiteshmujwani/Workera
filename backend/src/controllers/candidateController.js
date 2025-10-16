@@ -59,7 +59,7 @@ export const registerCandidate = async (req, res) => {
       otpExpiry,
       isVerified: false,
     });
-
+    console.log("before otp sent");
     // Send OTP via email
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
@@ -67,7 +67,7 @@ export const registerCandidate = async (req, res) => {
       subject: "Workera OTP Verification",
       text: `Your OTP is ${otp}. It expires in 1 minute.`,
     });
-
+    console.log("OTP SENT");
     res.status(201).json({
       message: "OTP sent to email.",
       userId: user._id,

@@ -49,5 +49,4 @@ app.use("/api/v1/user", userRoutes);
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Workera server running on port ${PORT}`);
-  console.log(`📍 Server URL: http://localhost:${PORT}`);
 });
