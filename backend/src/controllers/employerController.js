@@ -4,14 +4,11 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import { Resend } from "resend";
 
 dotenv.config();
 
-// Nodemailer transporter
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Helper: generate 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
@@ -70,23 +67,23 @@ export const registerEmployer = async (req, res) => {
     });
 
     // Send OTP via email
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    resend.emails.send({
+      from: "workera@resend.dev",
       to: email,
-      subject: "Workera Employer OTP Verification",
+      subject: "Workera OTP Verification",
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #333;">Welcome to Workera!</h2>
-          <p>Hello ${firstName},</p>
-          <p>Thank you for registering as an employer on Workera. Your OTP verification code is:</p>
-          <div style="background: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0;">
-            <h1 style="color: #000; font-size: 32px; margin: 0;">${otp}</h1>
-          </div>
-          <p><strong>This OTP expires in 1 minute.</strong></p>
-          <p>Company: ${companyName}</p>
-          <p>Best regards,<br>Workera Team</p>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">Welcome to Workera!</h2>
+        <p>Hello ${firstName},</p>
+        <p>Thank you for registering as an employer on Workera. Your OTP verification code is:</p>
+        <div style="background: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0;">
+          <h1 style="color: #000; font-size: 32px; margin: 0;">${otp}</h1>
         </div>
-      `,
+        <p><strong>This OTP expires in 1 minute.</strong></p>
+        <p>Company: ${companyName}</p>
+        <p>Best regards,<br>Workera Team</p>
+      </div>
+    `,
     });
 
     res.status(201).json({

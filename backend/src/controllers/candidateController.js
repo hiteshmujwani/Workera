@@ -4,14 +4,11 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import { Resend } from "resend";
 
 dotenv.config(); // applied here because it was not working in index.js for this file
 
-// Nodemailer transporter
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Helper: generate 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
@@ -59,15 +56,26 @@ export const registerCandidate = async (req, res) => {
       otpExpiry,
       isVerified: false,
     });
-    console.log("before otp sent");
-    // Send OTP via email
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+
+    // SEND MAIL OTP
+    resend.emails.send({
+      from: "workera@resend.dev",
       to: email,
       subject: "Workera OTP Verification",
-      text: `Your OTP is ${otp}. It expires in 1 minute.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">Welcome to Workera!</h2>
+          <p>Hello ${firstName},</p>
+          <p>Thank you for registering as an candidate on Workera. Your OTP verification code is:</p>
+          <div style="background: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0;">
+            <h1 style="color: #000; font-size: 32px; margin: 0;">${otp}</h1>
+          </div>
+          <p><strong>This OTP expires in 1 minute.</strong></p>
+          <p>Best regards,<br>Workera Team</p>
+        </div>
+      `,
     });
-    console.log("OTP SENT");
+
     res.status(201).json({
       message: "OTP sent to email.",
       userId: user._id,
