@@ -14,12 +14,20 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
 
 // Cookie options
+// const cookieOptions = {
+//   httpOnly: true, // JS cannot access cookie
+//   secure: process.env.NODE_ENV === "production", // HTTPS only in production
+//   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // prevent CSRF
+//   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+//   path: "/",
+// };
 const cookieOptions = {
-  httpOnly: true, // JS cannot access cookie
-  secure: process.env.NODE_ENV === "production", // HTTPS only in production
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // prevent CSRF
-  maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+  httpOnly: true,
+  secure: true, // Always true in production
+  sameSite: "none", // Required for cross-origin
+  maxAge: 30 * 24 * 60 * 60 * 1000,
   path: "/",
+  domain: process.env.NODE_ENV === "production" ? ".vercel.app" : undefined,
 };
 
 // generate JWT
