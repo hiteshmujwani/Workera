@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import Employer from "../models/Employer.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
+
 import dotenv from "dotenv";
 import { Resend } from "resend";
 

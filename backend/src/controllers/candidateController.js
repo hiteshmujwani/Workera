@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import Candidate from "../models/Candidate.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
+
 import dotenv from "dotenv";
 import { Resend } from "resend";
 
@@ -36,6 +36,7 @@ const generateToken = (id, role) => {
 
 // REGISTER candidate
 export const registerCandidate = async (req, res) => {
+  console.log("candidate controller running");
   try {
     const { firstName, lastName, email, password, skills } = req.body;
 
